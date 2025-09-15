@@ -87,7 +87,7 @@
         /* Image above the heart */
         .image-container {
             position: fixed;
-            top: 50%; /* Позиция над сердцем */
+            top: -30%; /* Позиция над сердцем */
             left: 50%;
             transform: translate(-50%, -50%);
             z-index: 9999;
@@ -351,29 +351,20 @@
             animation-direction: reverse;
         }
 
-        @media (max-width: 768px) {
-        .image-container {
-            position: fixed;
-            top: 54%; /* Позиция над сердцем */
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 9999;
-            cursor: pointer;
-        }
-        }
+
     </style>
 </head>
 <body>
     <!-- Starry background -->
     <div class="stars"></div>
     
-    <!-- Image above the heart -->
-    <div class="image-container">
-        <img src="two.png" alt="Two" id="twoImage">
-    </div>
+
     
     <!-- Glowing heart in center -->
     <div class="heart-container">
+        <div class="image-container">
+            <img src="two.png" alt="Two" id="twoImage">
+        </div>
         <div class="heart"></div>
     </div>
     
