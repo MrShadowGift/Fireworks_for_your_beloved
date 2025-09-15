@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fireworks for your beloved</title>
+    <style>
+        *, *::before, *::after {
+            padding: 0;
+            margin: 0 auto;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #070713 0%, #070716 50%, #060617 100%);
+            min-height: 100vh;
+            overflow: hidden;
+            cursor: crosshair;
+            position: relative;
+        }
+
+        /* Starry background */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, #eee, transparent),
+                radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), transparent),
+                radial-gradient(1px 1px at 90px 40px, #fff, transparent),
+                radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.6), transparent),
+                radial-gradient(2px 2px at 160px 30px, #fff, transparent),
+                radial-gradient(1px 1px at 200px 90px, rgba(255,255,255,0.7), transparent),
+                radial-gradient(2px 2px at 240px 50px, #eee, transparent),
+                radial-gradient(1px 1px at 280px 10px, rgba(255,255,255,0.9), transparent),
+                radial-gradient(1px 1px at 320px 70px, #fff, transparent),
+                radial-gradient(2px 2px at 360px 40px, rgba(255,255,255,0.8), transparent);
+            background-repeat: repeat;
+            background-size: 400px 200px;
+            animation: twinkle 10s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+
+        /* Glowing heart in center */
+        .heart-container {
+            position: fixed;
+            top: 78%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9998;
+        }
+
+        .heart {
+            width: 300px;
+            height: 270px;
+            position: relative;
+            animation: heartbeat 2s infinite;
+        }
+
+        .heart::before,
+        .heart::after {
+            content: '';
+            width: 150px;
+            height: 240px;
+            position: absolute;
+            left: 150px;
+            transform: rotate(-45deg);
+            background: linear-gradient(45deg, #ff6b9d, #ff8fab);
+            border-radius: 150px 150px 0 0;
+            transform-origin: 0 100%;
+            box-shadow: 0 0 100px #ff6b9d, 0 0 200px #ff6b9d, 0 0 300px #ff6b9d;
+        }
+
+        .heart::after {
+            left: 0;
+            transform: rotate(45deg);
+            transform-origin: 100% 100%;
+        }
+
+        /* Image above the heart */
+        .image-container {
+            position: fixed;
+            top: 50%; /* Позиция над сердцем */
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            cursor: pointer;
+        }
+
+        .image-container img {
+            width: 650px; /* Размер изображения */
+            height: auto;
+            border-radius: 10px;
+        }
+
+
+        /* Fireworks container styles */
+        .fireworks-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #fireworksCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* Rotating graphics styles - уменьшены в 2 раза */
+        .graphics-container {
+            position: fixed;
+            z-index: 10;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+            width: 0;
+            height: 0;
+            transform: scale(0.6); /* Уменьшение в 2 раза */
+        }
+
+        .graphics-container.active {
+            opacity: 1;
+        }
+
+        .graphics-container i {
+            position: absolute;
+            left: -30px;
+            top: -30px;
+            width: 200px;
+            height: 200px;
+            border-radius: 100px 100px 0 100px;
+            transform-origin: 30px 30px;
+            mix-blend-mode: plus-lighter;
+            animation: rotate-element var(--duration) var(--delay) infinite linear;
+            box-shadow: 25px 25px 5px var(--color) inset, 5px 5px 50px var(--color);
+        }
+
+        @keyframes rotate-element {
+            to { 
+                transform: rotate(360deg); 
+            }
+        }
+
+        /* Individual element styles with durations only */
+        .graphics-container i:nth-child(1) {
+            --delay: -0.5s;
+            --duration: 6.2s;
+        }
+
+        .graphics-container i:nth-child(2) {
+            --delay: -1.2s;
+            --duration: 7.8s;
+            animation-direction: reverse;
+        }
+
+        .graphics-container i:nth-child(3) {
+            --delay: -0.8s;
+            --duration: 5.9s;
+        }
+
+        .graphics-container i:nth-child(4) {
+            --delay: -2.1s;
+            --duration: 8.3s;
+            animation-direction: reverse;
+        }
+
+        .graphics-container i:nth-child(5) {
+            --delay: -1.7s;
+            --duration: 6.7s;
+        }
+
+        .graphics-container i:nth-child(6) {
+            --delay: -0.3s;
+            --duration: 7.4s;
+            animation-direction: reverse;
+        }
+
+        .graphics-container i:nth-child(7) {
+            --delay: -1.9s;
+            --duration: 5.6s;
+        }
+
+        .graphics-container i:nth-child(8) {
+            --delay: -0.6s;
+            --duration: 8.1s;
+            animation-direction: reverse;
+        }
+
+        .graphics-container i:nth-child(9) {
+            --delay: -1.4s;
+            --duration: 6.9s;
+        }
+
+        .graphics-container i:nth-child(10) {
+            --delay: -2.3s;
+            --duration: 7.2s;
+            animation-direction: reverse;
+        }
+
+        .graphics-container i:nth-child(11) {
+            --delay: -0.9s;
+            --duration: 5.8s;
+        }
+
+        .graphics-container i:nth-child(12) {
+            --delay: -1.6s;
+            --duration: 8.5s;
+            animation-direction: reverse;
+        }
+
+        .graphics-container i:nth-child(13) {
+            --delay: -0.4s;
+            --duration: 6.4s;
+        }
+
+        .graphics-container i:nth-child(14) {
+            --delay: -2.0s;
+            --duration: 7.6s;
+            animation-direction: reverse;
+        }
+
+        .graphics-container i:nth-child(15) {
+            --delay: -1.1s;
+            --duration: 5.7s;
+        }
+
+        .graphics-container i:nth-child(16) {
+            --delay: -0.7s;
+            --duration: 8.0s;
+            animation-direction: reverse;
+        }
+
+        .graphics-container i:nth-child(17) {
+            --delay: -1.8s;
+            --duration: 6.6s;
+        }
+
+        .graphics-container i:nth-child(18) {
+            --delay: -0.2s;
+            --duration: 7.9s;
+            animation-direction: reverse;
+        }
+
+        .graphics-container i:nth-child(19) {
+            --delay: -1.5s;
+            --duration: 5.5s;
+        }
+
+        .graphics-container i:nth-child(20) {
+            --delay: -2.2s;
+            --duration: 8.4s;
+            animation-direction: reverse;
+        }
+
+        .graphics-container i:nth-child(21) {
+            --delay: -0.1s;
+            --duration: 6.8s;
+        }
+
+        .graphics-container i:nth-child(22) {
+            --delay: -1.3s;
+            --duration: 7.1s;
+            animation-direction: reverse;
+        }
+
+        .graphics-container i:nth-child(23) {
+            --delay: -0.8s;
+            --duration: 6.0s;
+        }
+
+        .graphics-container i:nth-child(24) {
+            --delay: -2.4s;
+            --duration: 8.2s;
+            animation-direction: reverse;
+        }
+
+        .graphics-container i:nth-child(25) {
+            --delay: -1.0s;
+            --duration: 5.9s;
+        }
+
+        .graphics-container i:nth-child(26) {
+            --delay: -0.5s;
+            --duration: 7.7s;
+            animation-direction: reverse;
+        }
+
+        .graphics-container i:nth-child(27) {
+            --delay: -1.7s;
+            --duration: 6.3s;
+        }
+
+        .graphics-container i:nth-child(28) {
+            --delay: -0.9s;
+            --duration: 8.6s;
+            animation-direction: reverse;
+        }
+
+        .graphics-container i:nth-child(29) {
+            --delay: -1.4s;
+            --duration: 5.4s;
+        }
+
+        .graphics-container i:nth-child(30) {
+            --delay: -2.1s;
+            --duration: 7.5s;
+            animation-direction: reverse;
+        }
+
+        .graphics-container i:nth-child(31) {
+            --delay: -0.6s;
+            --duration: 6.1s;
+        }
+
+        .graphics-container i:nth-child(32) {
+            --delay: -1.8s;
+            --duration: 8.7s;
+            animation-direction: reverse;
+        }
+
+        .graphics-container i:nth-child(33) {
+            --delay: -0.3s;
+            --duration: 5.8s;
+        }
+
+        .graphics-container i:nth-child(34) {
+            --delay: -1.2s;
+            --duration: 7.3s;
+            animation-direction: reverse;
+        }
+
+        .graphics-container i:nth-child(35) {
+            --delay: -2.0s;
+            --duration: 6.5s;
+        }
+
+        .graphics-container i:nth-child(36) {
+            --delay: -0.7s;
+            --duration: 8.8s;
+            animation-direction: reverse;
+        }
+
+        @media (max-width: 768px) {
+        .image-container {
+            position: fixed;
+            top: 54%; /* Позиция над сердцем */
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            cursor: pointer;
+        }
+        }
+    </style>
+</head>
+<body>
+    <!-- Starry background -->
+    <div class="stars"></div>
+    
+    <!-- Image above the heart -->
+    <div class="image-container">
+        <img src="two.png" alt="Two" id="twoImage">
+    </div>
+    
+    <!-- Glowing heart in center -->
+    <div class="heart-container">
+        <div class="heart"></div>
+    </div>
+    
+    <!-- Fireworks container -->
+    <div class="fireworks-container">
+        <canvas id="fireworksCanvas"></canvas>
+    </div>
+    
+    <script>
+        // Canvas setup
+        const canvas = document.getElementById('fireworksCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // Stars on canvas
+        const stars = [];
+        const starCount = 400;
+
+        // Create stars
+        for (let i = 0; i < starCount; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: Math.random() * 1.5,
+                brightness: Math.random() * 0.5 + 0.5,
+                twinkleSpeed: Math.random() * 0.05 + 0.01
+            });
+        }
+
+        // Draw stars on canvas
+        function drawStars() {
+            const time = Date.now() * 0.001;
+            
+            stars.forEach(star => {
+                const twinkle = Math.sin(time * star.twinkleSpeed) * 0.5 + 0.5;
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 255, 255, ${star.brightness * twinkle})`;
+                ctx.fill();
+            });
+        }
+
+        // Fireworks particles
+        const particles = [];
+        const particleCount = 80;
+        
+        // Rockets (flying up)
+        const rockets = [];
+        
+        // Create a rocket that flies vertically up
+        function createRocket(targetX = null, targetY = null) {
+            const startX = targetX !== null ? targetX : Math.random() * canvas.width;
+            const hue = Math.random() * 360; // Случайный цвет для этого салюта
+            
+            // Гарантируем, что салют не выйдет за верхний край
+            const minY = 100; // Минимальная высота взрыва
+            const maxY = canvas.height * 0.7; // Максимальная высота взрыва (70% от высоты экрана)
+            const finalTargetY = targetY !== null ? targetY : minY + Math.random() * (maxY - minY);
+            
+            rockets.push({
+                x: startX,
+                y: canvas.height,
+                targetX: startX,
+                targetY: finalTargetY,
+                speed: Math.random() * 3 + 2,
+                size: Math.random() * 2 + 1,
+                hue: hue,
+                color: `hsl(${hue}, 100%, 70%)`,
+                arrived: false
+            });
+        }
+        
+        // Create multiple rockets at once
+        function createMultipleRockets(count = 5) {
+            for (let i = 0; i < count; i++) {
+                createRocket();
+            }
+        }
+        
+        // Update and draw rockets
+        function updateRockets() {
+            for (let i = 0; i < rockets.length; i++) {
+                const r = rockets[i];
+                
+                // Move rocket vertically up towards target
+                const dx = r.targetX - r.x;
+                const dy = r.targetY - r.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                
+                if (dist > 1) {
+                    // Летим строго вертикально вверх, игнорируя горизонтальное смещение
+                    r.y -= r.speed;
+                } else {
+                    // Rocket has reached target - create explosion
+                    createParticles(r.targetX, r.targetY, r.hue);
+                    createExplosionGraphics(r.targetX, r.targetY, r.hue);
+                    rockets.splice(i, 1);
+                    i--;
+                    continue;
+                }
+                
+                // Draw rocket
+                ctx.beginPath();
+                ctx.arc(r.x, r.y, r.size, 0, Math.PI * 2);
+                ctx.fillStyle = r.color;
+                ctx.fill();
+                
+                // Draw rocket tail
+                ctx.beginPath();
+                ctx.moveTo(r.x, r.y);
+                ctx.lineTo(r.x, r.y + 10);
+                ctx.strokeStyle = r.color;
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            }
+        }
+
+        // Create firework particles with specific color
+        function createParticles(x, y, hue) {
+            for (let i = 0; i < particleCount; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 3 + 1;
+                const velocity = {
+                    x: Math.cos(angle) * speed,
+                    y: Math.sin(angle) * speed
+                };
+                
+                // Добавляем небольшую вариативность к цвету частиц
+                const particleHue = (hue + Math.random() * 20 - 10) % 360;
+                const saturation = 80 + Math.random() * 20;
+                
+                particles.push({
+                    x: x,
+                    y: y,
+                    velocity: velocity,
+                    alpha: 1,
+                    size: Math.random() * 2 + 1,
+                    color: `hsla(${particleHue}, ${saturation}%, 70%, 0.8)`
+                });
+            }
+        }
+
+        // Update and draw particles
+        function updateParticles() {
+            for (let i = 0; i < particles.length; i++) {
+                const p = particles[i];
+                p.x += p.velocity.x;
+                p.y += p.velocity.y;
+                p.alpha -= 0.01;
+                p.velocity.y += 0.05; // Gravity effect
+                p.size *= 0.99; // Gradually decrease size
+                
+                if (p.alpha <= 0) {
+                    particles.splice(i, 1);
+                    i--;
+                }
+            }
+        }
+
+        function drawParticles() {
+            particles.forEach(p => {
+                ctx.globalAlpha = p.alpha;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fillStyle = p.color;
+                ctx.fill();
+            });
+            ctx.globalAlpha = 1;
+        }
+        
+        // Create explosion graphics at position with specific color
+        function createExplosionGraphics(x, y, hue) {
+            // Create a new graphics container for this explosion
+            const graphicsContainer = document.createElement('div');
+            graphicsContainer.className = 'graphics-container';
+            graphicsContainer.style.left = `${x}px`;
+            graphicsContainer.style.top = `${y}px`;
+            
+            // Add the graphic elements
+            for (let i = 0; i < 36; i++) {
+                const element = document.createElement('i');
+                graphicsContainer.appendChild(element);
+            }
+            
+            // Add to document
+            document.body.appendChild(graphicsContainer);
+            
+            // Set colors based on firework hue
+            updateGraphicsColors(graphicsContainer.querySelectorAll('i'), hue);
+            
+            // Show the graphics
+            setTimeout(() => {
+                graphicsContainer.classList.add('active');
+            }, 10);
+            
+            // Remove after animation
+            setTimeout(() => {
+                graphicsContainer.remove();
+            }, 3000);
+        }
+        
+        // Update colors for graphics elements based on firework color
+        function updateGraphicsColors(elements, baseHue) {
+            elements.forEach(el => {
+                // Добавляем небольшую вариативность к основному цвету
+                const hueVariation = Math.random() * 30 - 15;
+                const hue = (baseHue + hueVariation) % 360;
+                const color = `hsla(${hue}, 85.2%, 70%, 0.3)`;
+                el.style.setProperty('--color', color);
+            });
+        }
+
+        // Animation loop
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw stars
+            drawStars();
+            
+            // Update and draw rockets
+            updateRockets();
+            
+            // Update and draw particles
+            updateParticles();
+            drawParticles();
+            
+            requestAnimationFrame(animate);
+        }
+
+        // Initialize animation
+        animate();
+
+        // Click to create multiple fireworks
+        document.addEventListener('click', (e) => {
+            // Проверяем, что клик был не по сердцу и не по изображению
+            const heart = document.querySelector('.heart-container');
+            const image = document.querySelector('.image-container');
+            const heartRect = heart.getBoundingClientRect();
+            const imageRect = image.getBoundingClientRect();
+            const clickX = e.clientX;
+            const clickY = e.clientY;
+            
+            // Если клик не по сердцу и не по изображению, создаем несколько салютов
+            if (!(clickX >= heartRect.left && clickX <= heartRect.right &&
+                  clickY >= heartRect.top && clickY <= heartRect.bottom) &&
+                !(clickX >= imageRect.left && clickX <= imageRect.right &&
+                  clickY >= imageRect.top && clickY <= imageRect.bottom)) {
+                createMultipleRockets(5); // Запускаем 5 салютов одновременно
+            }
+        });
+
+        // Click on image to create multiple fireworks
+        const twoImage = document.getElementById('twoImage');
+        twoImage.addEventListener('click', () => {
+            createMultipleRockets(8); // При клике на изображение запускаем 8 салютов
+        });
+
+        // Resize handling
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            // Reposition stars
+            stars.forEach(star => {
+                star.x = Math.random() * canvas.width;
+                star.y = Math.random() * canvas.height;
+            });
+        });
+    </script>
+</body>
+</html>
